@@ -29,7 +29,7 @@ public class HistoricalChange {
     private String frCitation;
     private Integer position;
     private boolean displayInToc;
-    private Integer year;
+    private Integer yearValue;
     private LocalDate lastModified;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

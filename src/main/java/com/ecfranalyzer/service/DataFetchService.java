@@ -137,14 +137,14 @@ public class DataFetchService {
 
         Agency agency = Agency.builder()
                 .id(agencyId)
-                .name((String) agencyData.get("name"))
-                .shortName((String) agencyData.getOrDefault("short_name", ""))
-                .displayName((String) agencyData.getOrDefault("display_name", ""))
-                .sortableName((String) agencyData.getOrDefault("sortable_name", ""))
-                .slug((String) agencyData.getOrDefault("slug", ""))
+                .name(asString(agencyData.getOrDefault("name", "default agency name")))
+                .shortName(asString(agencyData.getOrDefault("short_name", "default agency data")))
+                .displayName(asString(agencyData.getOrDefault("display_name", "default agency display")))
+                .sortableName(asString(agencyData.getOrDefault("sortable_name", "default sortable")))
+                .slug(asString(agencyData.getOrDefault("slug", "default slug")))
                 .build();
 
-        // Save the agency first to establish ID
+        // Save the agency to establish ID
         agencyRepository.save(agency);
 
         // Process children if present
@@ -164,8 +164,8 @@ public class DataFetchService {
 
             for (Map<String, Object> refData : cfrRefs) {
                 Agency.CfrReference reference = new Agency.CfrReference(
-                        (String) refData.getOrDefault("title", ""),
-                        (String) refData.getOrDefault("chapter", "")
+                        asString(refData.getOrDefault("title", "")),
+                        asString(refData.getOrDefault("chapter", ""))
                 );
                 references.add(reference);
             }
@@ -175,6 +175,21 @@ public class DataFetchService {
 
         // Update the agency with references and children
         agencyRepository.save(agency);
+    }
+
+    /**
+     * Safely converts an object to a String.
+     * If the object is not a String, attempts to call its toString().
+     * Returns a default value ("") if the value is null.
+     */
+    private String asString(Object value) {
+        if (value == null) {
+            return "";
+        }
+        if (value instanceof String) {
+            return (String) value;
+        }
+        return value.toString();
     }
 
     private String generateAgencyId(Map<String, Object> agencyData) {
@@ -450,7 +465,7 @@ public class DataFetchService {
             try {
                 LocalDate date = LocalDate.parse(dateStr);
                 change.setErrorOccurred(date);
-                change.setYear(date.getYear());
+                change.setYearValue(date.getYear());
             } catch (Exception e) {
                 // Ignore parsing errors
             }
@@ -462,7 +477,7 @@ public class DataFetchService {
             if (yearMatcher.find()) {
                 try {
                     int year = Integer.parseInt(yearMatcher.group());
-                    change.setYear(year);
+                    change.setYearValue(year);
                     // Set an arbitrary month/day if not found
                     change.setErrorOccurred(LocalDate.of(year, 1, 1));
                 } catch (Exception e) {
@@ -626,7 +641,7 @@ public class DataFetchService {
                                         .frCitation(frCitation)
                                         .position(position)
                                         .displayInToc(displayInToc)
-                                        .year(year)
+                                        .yearValue(year)
                                         .lastModified(lastModified)
                                         .build();
 
