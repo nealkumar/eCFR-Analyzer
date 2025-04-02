@@ -1,0 +1,61 @@
+ecfr-analyzer/
+├── backend/
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/
+│   │   │   │   └── com/
+│   │   │   │       └── ecfranalyzer/
+│   │   │   │           ├── EcfrAnalyzerApplication.java
+│   │   │   │           ├── config/
+│   │   │   │           │   └── AppConfig.java
+│   │   │   │           ├── controller/
+│   │   │   │           │   ├── AgencyController.java
+│   │   │   │           │   ├── AnalyticsController.java
+│   │   │   │           │   └── TitleController.java
+│   │   │   │           ├── model/
+│   │   │   │           │   ├── Agency.java
+│   │   │   │           │   ├── Title.java
+│   │   │   │           │   ├── Section.java
+│   │   │   │           │   ├── HistoricalChange.java
+│   │   │   │           │   └── analytics/
+│   │   │   │           │       ├── WordCountResult.java
+│   │   │   │           │       └── ChangeFrequencyResult.java
+│   │   │   │           ├── repository/
+│   │   │   │           │   ├── AgencyRepository.java
+│   │   │   │           │   ├── TitleRepository.java
+│   │   │   │           │   └── HistoricalChangeRepository.java
+│   │   │   │           ├── service/
+│   │   │   │           │   ├── EcfrApiService.java
+│   │   │   │           │   ├── DataFetchService.java
+│   │   │   │           │   ├── AnalyticsService.java
+│   │   │   │           │   └── SummaryService.java
+│   │   │   │           └── util/
+│   │   │   │               └── TextAnalysisUtil.java
+│   │   │   └── resources/
+│   │   │       ├── application.properties
+│   │   │       └── static/
+│   │   └── test/
+│   │       └── java/
+│   │           └── com/
+│   │               └── ecfranalyzer/
+│   ├── pom.xml
+│   └── README.md
+└── frontend/
+    ├── public/
+    │   ├── index.html
+    │   └── favicon.ico
+    ├── src/
+    │   ├── components/
+    │   │   ├── AgencyList.js
+    │   │   ├── TitleDetails.js
+    │   │   ├── WordCountChart.js
+    │   │   ├── HistoricalChangesChart.js
+    │   │   └── AISummary.js
+    │   ├── pages/
+    │   │   ├── Dashboard.js
+    │   │   ├── AgencyDetails.js
+    │   │   └── About.js
+    │   ├── App.js
+    │   └── index.js
+    ├── package.json
+    └── README.md
