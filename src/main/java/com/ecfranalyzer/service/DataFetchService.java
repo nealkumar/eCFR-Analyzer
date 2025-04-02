@@ -299,7 +299,7 @@ public class DataFetchService {
 
         try {
             // Fetch the full XML document
-            String xmlContent = ecfrApiService.getFullDocument(date, title.getTitleNumber(), null, null, null, null, null, null, null);
+            String xmlContent = ecfrApiService.getFullDocument(title.getTitleNumber());
 
             if (xmlContent != null && !xmlContent.isEmpty()) {
                 // Extract the word count
@@ -502,7 +502,7 @@ public class DataFetchService {
         String date = today.format(DATE_FORMATTER);
 
         try {
-            Map<String, Object> response = ecfrApiService.getStructure(date, title.getTitleNumber());
+            Map<String, Object> response = ecfrApiService.getStructure(title.getTitleNumber());
 
             // Process structure data
             if (response != null) {

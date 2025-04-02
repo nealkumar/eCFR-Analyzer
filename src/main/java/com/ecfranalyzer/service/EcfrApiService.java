@@ -1,5 +1,6 @@
 package com.ecfranalyzer.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
@@ -9,16 +10,32 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 @Slf4j
 public class EcfrApiService {
+
     private static final String BASE_URL = "https://www.ecfr.gov";
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
 
     @Autowired
     private RestTemplate restTemplate;
+
+    private static final String TITLES_ENDPOINT = BASE_URL + "/api/versioner/v1/titles";
+
+    private LocalDate latestAvailableDate = null;
+
+    private LocalDate fetchLatestAvailableDate() {
+        if (latestAvailableDate != null) {
+            return latestAvailableDate;
+        }
+        this.latestAvailableDate = LocalDate.of(2025, 3, 21);
+        return this.latestAvailableDate;
+    }
 
     // Admin Service endpoints
 
@@ -411,78 +428,54 @@ public class EcfrApiService {
         }
     }
 
-    public String getFullDocument(String date, String title, String subtitle, String chapter,
-                                  String subchapter, String part, String subpart, String section,
-                                  String appendix) {
-        UriComponentsBuilder builder = UriComponentsBuilder
-                .fromHttpUrl(BASE_URL)
-                .path("/api/versioner/v1/full/{date}/title-{title}.xml");
+    public String getFullDocument(String titleNumber) {
+        LocalDate useDate = fetchLatestAvailableDate();
+        String formattedDate = useDate.format(DATE_FORMATTER);
 
-        Map<String, String> uriParams = new HashMap<>();
-        uriParams.put("date", date);
-        uriParams.put("title", title);
-
-        String url = builder.buildAndExpand(uriParams).toUriString();
-
-        // Add query parameters for hierarchy elements if provided
-        UriComponentsBuilder queryBuilder = UriComponentsBuilder.fromHttpUrl(url);
-
-        if (subtitle != null) {
-            queryBuilder.queryParam("subtitle", subtitle);
-        }
-
-        if (chapter != null) {
-            queryBuilder.queryParam("chapter", chapter);
-        }
-
-        if (subchapter != null) {
-            queryBuilder.queryParam("subchapter", subchapter);
-        }
-
-        if (part != null) {
-            queryBuilder.queryParam("part", part);
-        }
-
-        if (subpart != null) {
-            queryBuilder.queryParam("subpart", subpart);
-        }
-
-        if (section != null) {
-            queryBuilder.queryParam("section", section);
-        }
-
-        if (appendix != null) {
-            queryBuilder.queryParam("appendix", appendix);
-        }
-
-        url = queryBuilder.toUriString();
-        log.info("Getting full document for title {} on {} from {}", title, date, url);
+        String url = String.format("%s/api/versioner/v1/full/%s/title-%s.xml", BASE_URL, formattedDate, titleNumber);
+        log.info("Getting full document for title {} on {} from {}", titleNumber, formattedDate, url);
 
         try {
             return restTemplate.getForObject(url, String.class);
         } catch (Exception e) {
             log.error("Error getting full document: {}", e.getMessage());
-            return "";
+            return null;
         }
     }
+
 
     @Cacheable("structure")
-    public Map<String, Object> getStructure(String date, String title) {
-        String url = UriComponentsBuilder
-                .fromHttpUrl(BASE_URL)
-                .path("/api/versioner/v1/structure/{date}/title-{title}.json")
-                .buildAndExpand(date, title)
-                .toUriString();
+    public Map<String, Object> getStructure(String titleNumber) {
+        LocalDate useDate = fetchLatestAvailableDate();
+        String formattedDate = useDate.format(DATE_FORMATTER);
 
-        log.info("Getting structure for title {} on {} from {}", title, date, url);
+        String url = String.format("%s/api/versioner/v1/structure/%s/title-%s.json", BASE_URL, formattedDate, titleNumber);
+        log.info("Getting structure for title {} on {} from {}", titleNumber, formattedDate, url);
 
         try {
-            return restTemplate.getForObject(url, HashMap.class);
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+            // Log the content type for debugging
+            String contentType = response.getHeaders().getContentType().toString();
+            log.info("Received content type: {}", contentType);
+
+            if (contentType.contains("application/json")) {
+                // Parse JSON into Map
+                ObjectMapper objectMapper = new ObjectMapper();
+                return objectMapper.readValue(response.getBody(), Map.class);
+            } else if (contentType.contains("application/octet-stream")) {
+                log.warn("Received binary/octet-stream response for title structure. Cannot process this response.");
+                return null; // Fallback or handle binary response as required
+            } else {
+                log.error("Unsupported content type: {}", contentType);
+                return null;
+            }
         } catch (Exception e) {
             log.error("Error getting structure: {}", e.getMessage());
-            return new HashMap<>();
+            return null;
         }
     }
+
 
     @Cacheable("titles")
     public Map<String, Object> getAllTitles() {
