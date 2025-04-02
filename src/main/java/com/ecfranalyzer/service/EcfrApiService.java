@@ -33,7 +33,7 @@ public class EcfrApiService {
         if (latestAvailableDate != null) {
             return latestAvailableDate;
         }
-        this.latestAvailableDate = LocalDate.of(2025, 3, 21);
+        this.latestAvailableDate = LocalDate.of(2020, 12, 12);
         return this.latestAvailableDate;
     }
 

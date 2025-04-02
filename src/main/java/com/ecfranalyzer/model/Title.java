@@ -1,5 +1,6 @@
 package com.ecfranalyzer.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +28,7 @@ public class Title {
     private boolean reserved;
     private boolean processingInProgress;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "agency_id")
     private Agency agency;

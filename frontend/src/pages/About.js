@@ -96,10 +96,10 @@ const About = () => {
 
                 <Box sx={{ mt: 4, textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary">
-                        This project was created for DOGE as a demonstration of using the eCFR API.
+                        This project was created for DOGE by Neal Kumar as a demonstration of using the eCFR API.
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        © {new Date().getFullYear()} - All Rights Reserved
+                        © {new Date().getFullYear()} - Neal Kumar - All Rights Reserved
                     </Typography>
                 </Box>
             </Paper>

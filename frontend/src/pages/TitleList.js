@@ -41,14 +41,31 @@ const TitleList = () => {
             try {
                 setLoading(true);
 
-                // Fetch titles
+                // Get the data from your API
                 const titlesResponse = await apiService.getAllTitles();
-                setTitles(titlesResponse.data);
-                setFilteredTitles(titlesResponse.data);
-
-                // Fetch agencies for filter
                 const agenciesResponse = await apiService.getAllAgencies();
-                setAgencies(agenciesResponse.data);
+
+                // Check the structure of the response
+                console.log('Titles response:', titlesResponse);
+
+                // Make sure we're setting an array to state
+                const titlesData = Array.isArray(titlesResponse.data)
+                    ? titlesResponse.data
+                    : (titlesResponse.data && Array.isArray(titlesResponse.data.content))
+                        ? titlesResponse.data.content
+                        : [];
+
+                setTitles(titlesData);
+                setFilteredTitles(titlesData);
+
+                // Similar checks for agencies data
+                const agenciesData = Array.isArray(agenciesResponse.data)
+                    ? agenciesResponse.data
+                    : (agenciesResponse.data && Array.isArray(agenciesResponse.data.content))
+                        ? agenciesResponse.data.content
+                        : [];
+
+                setAgencies(agenciesData);
 
                 setLoading(false);
             } catch (err) {

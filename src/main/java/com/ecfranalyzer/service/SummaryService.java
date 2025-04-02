@@ -30,10 +30,10 @@ public class SummaryService {
         List<ChangeFrequencyResult> topAgenciesByChanges = analyticsService.getChangeFrequencyByAgency()
                 .stream()
                 .limit(5)
-                .collect(Collectors.toList());
+                .toList();
 
         // Build summary text
-        summary.append("# eCFR Analytics Summary\n\n");
+        summary.append("# eCFR Analytics Summary (Effective Aggregation Date of 12/12/2020\n\n");
 
         // Word count summary
         summary.append("## Largest Federal Regulations by Word Count\n\n");

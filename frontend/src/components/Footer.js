@@ -26,7 +26,7 @@ const Footer = () => {
                     </Link>
                 </Typography>
                 <Typography variant="body2" color="text.secondary" align="center">
-                    {`© ${new Date().getFullYear()} DOGE Project`}
+                    {`© Neal Kumar ${new Date().getFullYear()} for DOGE`}
                 </Typography>
             </Container>
         </Box>

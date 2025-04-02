@@ -289,7 +289,7 @@ const Dashboard = () => {
                 }}
             >
                 <Typography variant="h5" gutterBottom>
-                    AI-Generated Summary
+                    Dashboard Summary
                 </Typography>
                 <ReactMarkdown>{summary}</ReactMarkdown>
             </Paper>

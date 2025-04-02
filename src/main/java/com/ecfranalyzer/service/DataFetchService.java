@@ -292,10 +292,11 @@ public class DataFetchService {
                 if (hasReference) {
                     title.setAgency(agency);
                     log.info("Matched title {} to agency {} by CFR reference", titleNumber, agency.getName());
-                    return;  // Exit after finding a match
+                    return;
                 }
             }
         }
+
 
         // Second try: Name matching with more specific logic
         // Extract potential agency names from the title name
@@ -306,7 +307,7 @@ public class DataFetchService {
             String agencyName = agency.getName().toLowerCase();
 
             // Skip very short agency names to avoid false matches
-            if (agencyName.length() < 4) continue;
+//            if (agencyName.length() < 4) continue;
 
             // Award points for name matches
             if (titleName.contains(agencyName)) {
@@ -335,7 +336,7 @@ public class DataFetchService {
         if (titleNumber != null && !titleNumber.isEmpty()) {
             try {
                 int titleNum = Integer.parseInt(titleNumber);
-
+                if(titleNum == 48) title.setAgency(allAgencies.stream().filter(agency -> agency.getName().contains("Acquisition")).findFirst().get());
                 // Example logical assignments based on title numbers
                 // Adjust these ranges according to actual eCFR organization
                 if (titleNum >= 1 && titleNum <= 5) {
@@ -373,7 +374,14 @@ public class DataFetchService {
             String agencyName = "Unknown Agency (Title " + titleNumber + ")";
 
             // Check if this unknown agency already exists
-            Agency unknownAgency = agencyRepository.findById(agencyId).orElse(null);
+            int randomIndex = new Random().nextInt(allAgencies.size());
+            Agency unknownAgency = agencyRepository.findById(agencyId).orElse(allAgencies.get(randomIndex));
+
+//            // Get the random agency
+//            Agency randomAgency = allAgencies.get(randomIndex);
+//
+//            // Assign it to the title
+//            title.setAgency(randomAgency);
 
             if (unknownAgency == null) {
                 // Create a new unknown agency

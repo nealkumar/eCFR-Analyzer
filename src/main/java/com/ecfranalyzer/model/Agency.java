@@ -1,5 +1,6 @@
 package com.ecfranalyzer.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -28,6 +29,7 @@ public class Agency {
     private String slug;
 
     @OneToMany(mappedBy = "agency")
+    @JsonManagedReference
     private List<Title> titles = new ArrayList<>();
 
     @Transient
